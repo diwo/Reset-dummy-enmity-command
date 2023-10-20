@@ -31,15 +31,25 @@
     </Reference>
   </ItemGroup>
 
-  <Target Name="CleanOutDir" AfterTargets="Build">
+
+
+<Target Name="xivrepo" AfterTargets="PostBuildEvent">
+	<ItemGroup>
+		<FilesToMove Include="$(ProjectDir)$(OutDir)$(ProjectName)\*.*"/>
+	</ItemGroup>
+	<Move SourceFiles="@(FilesToMove)" DestinationFolder="$(ProjectDir)..\xivplugins\plugins\$(ProjectName)"/>
     <ItemGroup>
-      <DeleteAssemblies Include="$(TargetDir)*.pdb" />
-      <DeleteAssemblies Include="$(TargetDir)$(AssemblyName).deps.json" />
+        <DeleteAssemblies Include="$(TargetDir)*.pdb" />
+        <DeleteAssemblies Include="$(TargetDir)$(AssemblyName).deps.json" />
     </ItemGroup>
     <Message Text="Deleting @(DeleteAssemblies)" Importance="high" />
     <Delete Files="@(DeleteAssemblies)" />
     <RemoveDir Directories="$(TargetDir)\ref\" />
-  </Target>
+</Target>
+
+	<!--<Target Name="CleanOutDir" AfterTargets="Build">
+    
+  </Target>-->
 
   <!--<Target Name="PackagePlugin" AfterTargets="CleanOutDir" Condition="'$(Configuration)' == 'Release'">
     <DalamudPackager ProjectDir="$(ProjectDir)" OutputPath="$(OutputPath)" Exclude="*.pdb;" AssemblyName="$(AssemblyName)" />
