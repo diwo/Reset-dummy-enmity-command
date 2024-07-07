@@ -9,7 +9,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Character = Dalamud.Game.ClientState.Objects.Types.Character;
+using Character = Dalamud.Game.ClientState.Objects.Types.ICharacter;
 #if DEBUG
 using Dalamud.Hooking;
 #endif
@@ -71,7 +71,7 @@ namespace ResetEnmityCommand
             void ResetTarget(string s, string s1)
 			{
                 var target = TargetManager.Target;
-                if (target is Character { NameId: 541 }) ResetEnmity((int)target.ObjectId);
+                if (target is Character { NameId: 541 }) ResetEnmity((int)target.EntityId);
 			}
 
 			void ResetAll(string s, string s1)
@@ -80,20 +80,20 @@ namespace ResetEnmityCommand
 				if (addonByName != IntPtr.Zero)
 				{
 					var addon = (AddonEnemyList*)addonByName;
-					var numArray = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.AtkArrayDataHolder.NumberArrays[21];
+                    var numArray = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GetUIModule()->GetRaptureAtkModule()->AtkModule.AtkArrayDataHolder.NumberArrays[21];
 #if DEBUG
-					numArray = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GetUiModule()->GetRaptureAtkModule()
+					numArray = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GetUIModule()->GetRaptureAtkModule()
 						->AtkModule.AtkArrayDataHolder.NumberArrays[int.Parse(s1.Split()[0])];
 #endif
 					for (var i = 0; i < addon->EnemyCount; i++)
 					{
 						var enemyObjectId = numArray->IntArray[8 + i * 6];
-						var enemyChara = CharacterManager.Instance()->LookupBattleCharaByObjectId((uint)enemyObjectId);
+                        var enemyChara = CharacterManager.Instance()->LookupBattleCharaByEntityId((uint)enemyObjectId);
 #if DEBUG
                         PluginLog.Debug($"numArray->IntArray[8 + {i} * 6] = {enemyObjectId}  |  enemyChara = {*enemyChara}  | {(enemyChara is null ? "null" : (Encoding.UTF8.GetString(enemyChara->Character.GameObject.Name, 20)))}");
 #endif
                         if (enemyChara is null) continue;
-						if (enemyChara->Character.NameID == 541) ResetEnmity(enemyObjectId);
+                        if (enemyChara->Character.NameId == 541) ResetEnmity(enemyObjectId);
 					}
 				}
 			}
