@@ -10,6 +10,7 @@
   <PropertyGroup>
     <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
     <RootNamespace>ResetEnmityCommand</RootNamespace>
+	<RepoPath>..\xivplugins\plugins\$(AssemblyName)</RepoPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -17,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="2.1.13" />
+    <PackageReference Include="DalamudPackager" Version="11.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,19 +34,13 @@
 
 
 
-<Target Name="xivrepo" AfterTargets="PostBuildEvent">
+  <Target Name="xivrepo" AfterTargets="Build" Condition="Exists($(RepoPath))">
 	<ItemGroup>
-		<FilesToMove Include="$(ProjectDir)$(OutDir)$(ProjectName)\*.*"/>
+		<FilesToMove Include="$(ProjectDir)$(OutDir)$(AssemblyName)\*.*" />
 	</ItemGroup>
-	<Move SourceFiles="@(FilesToMove)" DestinationFolder="$(ProjectDir)..\xivplugins\plugins\$(ProjectName)"/>
-    <ItemGroup>
-        <DeleteAssemblies Include="$(TargetDir)*.pdb" />
-        <DeleteAssemblies Include="$(TargetDir)$(AssemblyName).deps.json" />
-    </ItemGroup>
-    <Message Text="Deleting @(DeleteAssemblies)" Importance="high" />
-    <Delete Files="@(DeleteAssemblies)" />
-    <RemoveDir Directories="$(TargetDir)\ref\" />
-</Target>
+	<Move SourceFiles="@(FilesToMove)" DestinationFolder="$(ProjectDir)$(RepoPath)" OverwriteReadOnlyFiles="true" />
+	<Message Text="Moving to $(RepoPath)" Importance="high" />
+  </Target>
 
 	<!--<Target Name="CleanOutDir" AfterTargets="Build">
     

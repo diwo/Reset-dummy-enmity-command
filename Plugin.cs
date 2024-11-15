@@ -51,14 +51,14 @@ namespace ResetEnmityCommand
 
         public unsafe Plugin()
 		{
-			var ExecuteCmdPtr = SigScanner.ScanText("E8 ?? ?? ?? ?? 8D 43 0A");
+			var ExecuteCmdPtr = SigScanner.ScanText("E8 ?? ?? ?? ?? 8D 46 0A");
 
 			ExecuteCommand = Marshal.GetDelegateForFunctionPointer<ExecuteCommandDele>(ExecuteCmdPtr);
             CommandManager.AddHandler("/resetenmity", new CommandInfo(ResetTarget) { HelpMessage = "Reset target dummy's enmity." });
 			CommandManager.AddHandler("/resetenmityall", new CommandInfo(ResetAll) { HelpMessage = "Reset the enmity of all dummies." });
 #if DEBUG
 			PluginLog.Debug($"{nameof(ExecuteCommand)} +{(long)ExecuteCmdPtr - (long)Process.GetCurrentProcess().MainModule.BaseAddress:X} ");
-            ExecuteCommandHook = GameInteropProvider.HookFromAddress<ExecuteCommandDele>(SigScanner.ScanText(ExecuteCmdPtr), ExecuteCommandDetour);
+            ExecuteCommandHook = GameInteropProvider.HookFromAddress<ExecuteCommandDele>(SigScanner.ScanText("E8 ?? ?? ?? ?? 8D 46 0A"), ExecuteCommandDetour);
             ExecuteCommandHook.Enable();
 #endif
 
@@ -90,7 +90,7 @@ namespace ResetEnmityCommand
 						var enemyObjectId = numArray->IntArray[8 + i * 6];
                         var enemyChara = CharacterManager.Instance()->LookupBattleCharaByEntityId((uint)enemyObjectId);
 #if DEBUG
-                        PluginLog.Debug($"numArray->IntArray[8 + {i} * 6] = {enemyObjectId}  |  enemyChara = {*enemyChara}  | {(enemyChara is null ? "null" : (Encoding.UTF8.GetString(enemyChara->Character.GameObject.Name, 20)))}");
+                        PluginLog.Debug($"numArray->IntArray[8 + {i} * 6] = {enemyObjectId}  |  enemyChara = {*enemyChara}  | {(enemyChara is null ? "null" : enemyChara->Character.GameObject.NameString.ToString())}");
 #endif
                         if (enemyChara is null) continue;
                         if (enemyChara->Character.NameId == 541) ResetEnmity(enemyObjectId);
