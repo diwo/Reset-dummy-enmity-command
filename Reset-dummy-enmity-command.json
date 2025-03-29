@@ -4,7 +4,6 @@
   "Punchline": "Add a reset striking dummy enmity command.",
   "Description": "Add a reset striking dummy enmity command.",
   "RepoUrl": "https://github.com/maributt/Reset-dummy-enmity-command",
-  "DalamudApiLevel": 11,
   "Tags": [
     "akira",
     "striking",
